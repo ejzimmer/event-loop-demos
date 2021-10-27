@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import styled, { keyframes } from "styled-components"
 
 const Container = styled.div`
@@ -13,22 +12,31 @@ const spin = keyframes`
   to { transform: rotate(-1turn); }
 `
 
+interface LoopProps {
+  running: boolean
+}
+
 const Loop = styled.img`
   margin: auto;
   width: 100%;
   height: 100%;
   animation: ${spin} 1s 0.3s linear infinite;
-  animation-play-state: paused;
+  animation-play-state: ${({ running }: LoopProps) =>
+    running ? "running" : "paused"};
 `
 
-export function QueueSelector() {
+interface Props {
+  running: boolean
+}
+
+export function QueueSelector({ running }: Props) {
   // useEffect(() => {
   //   setTimeout(() => pickQueue(), 500)
   // }, [])
 
   return (
     <Container>
-      <Loop src="circular-arrow.svg" />
+      <Loop running={running} src="circular-arrow.svg" />
     </Container>
   )
 }

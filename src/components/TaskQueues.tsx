@@ -35,7 +35,7 @@ export function TaskQueues({ rendering = true, tasks, popTask }: Props) {
           <RenderingPipeline addTask={addTask} />
         </RenderingPipelineContainer>
       )} */}
-      <QueueSelector />
+      <QueueSelector running={tasks.length > 0} />
     </Container>
   )
 }
