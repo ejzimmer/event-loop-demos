@@ -16,3 +16,11 @@
   font-size: 3.35vw;
   margin: auto;
 }
+
+.browser {
+  background-image: url("mouse-pointer.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: calc(var(--width) / 1.16);
+  width: calc(var(--width) / 2);
+}

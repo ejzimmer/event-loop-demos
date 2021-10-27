@@ -8,6 +8,7 @@ function App() {
       <ul>
         <li>
           <Link to="parser-only">Parser only</Link>
+          <Link to="simple">Simple</Link>
         </li>
       </ul>
       <Switch>

@@ -78,15 +78,6 @@ export function TaskSource({ type, addTask }: Props) {
       transform-origin: 20% top;
     }
 
-
-    .browser {
-      background-image: url('css/mouse-pointer.svg');
-      background-size: contain;
-      background-repeat: no-repeat;
-      height: calc(var(--width) / 1.16);
-      width: calc(var(--width) / 2);
-    }
-
     .timer {
       --colour: white;
       border: var(--thickness) solid var(--colour);
