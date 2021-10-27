@@ -1,0 +1,35 @@
+.task.browser {
+  background-color: hsl(215, 80%, 80%);
+}
+.task.timer {
+  background-color: hsl(350, 80%, 80%);
+}
+.task.network {
+  background-color: hsl(100, 80%, 80%);
+}
+.task.drive {
+  background-color: hsl(40, 80%, 80%);
+}
+.task.microtask {
+  background-color: #f7df1e;
+}
+.task.next-tick {
+  color: white;
+  border-color: white;
+  background-color: red;
+}
+.task.necessary {
+  background-color: rgb(var(--green));
+}
+.task.unnecessary {
+  border-color: #aaa;
+}
+
+.task.animation {
+  height: 60px;
+  background-image: url("cat.png");
+  background-size: cover;
+}
+.task.animation::before {
+  content: "";
+}
