@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import styled, { keyframes } from "styled-components"
 import "./task-source.css"
 
@@ -7,7 +8,7 @@ const Container = styled.div`
   cursor: pointer;
 `
 
-const Thread = styled.div`
+const ThreadContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
@@ -50,16 +51,84 @@ const asyncTasks = ["timer", "network", "drive"]
 
 interface Props {
   type: string
-  addTask: (type: string) => void
+  pushTask: (type: string) => void
 }
 
-export function TaskSource({ type, addTask }: Props) {
+export function TaskSource({ type, pushTask }: Props) {
+  const [threads, setThreads] = useState<{ id: number; time: string }[]>([])
+  const [nextId, setNextId] = useState(0)
+
+  const isAsync = asyncTasks.includes(type)
+
+  const addTask = () => {
+    isAsync ? pushThread(`${Math.random() * 4 + 2}s`) : pushTask(type)
+  }
+
+  const pushThread = (time: string) => {
+    setThreads([...threads, { id: nextId, time }])
+    setNextId((nextId) => nextId + 1)
+  }
+
+  const removeThread = (id: number) => {
+    setThreads(threads.filter((thread) => thread.id !== id))
+    pushTask(type)
+  }
+
   return (
-    <Container onClick={() => addTask(type)}>
+    <Container onClick={addTask}>
       <div className={type} style={{ margin: "auto" }} />
-      {/* <Thread /> */}
+      <ThreadContainer>
+        {threads.map((thread) => (
+          <AsyncTask
+            key={thread.id}
+            id={thread.id}
+            type={type}
+            time={thread.time}
+            removeThread={removeThread}
+          />
+        ))}
+      </ThreadContainer>
       {/* {type === "drive" && <Arm />} */}
     </Container>
+  )
+}
+
+function AsyncTask({
+  id,
+  type,
+  removeThread,
+  time,
+}: {
+  id: number
+  type: string
+  removeThread: (id: number) => void
+  time: string
+}) {
+  const [transform, setTransform] = useState("")
+
+  useEffect(() => {
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => setTransform("rotate(1turn)"))
+    )
+  }, [])
+
+  const end = () => {
+    removeThread(id)
+  }
+
+  return (
+    <div className="thread-item">
+      <div className="shrinker">
+        <div
+          className={type}
+          style={{
+            transitionDuration: time,
+            transform,
+          }}
+          onTransitionEndCapture={end}
+        />
+      </div>
+    </div>
   )
 }
 
@@ -68,34 +137,7 @@ export function TaskSource({ type, addTask }: Props) {
 }
 {
   /* <style>
-    .thread-item {
-      --size: calc(var(--width) / 2 + var(--thickness));
-      width: var(--size);
-      height: var(--size);
-    }
-    .shrinker {
-      transform: scale(.4);
-      transform-origin: 20% top;
-    }
 
-    .timer {
-      --colour: white;
-      border: var(--thickness) solid var(--colour);
-      border-radius: 50%;
-      width: var(--width);
-      height: var(--width);
-      position: relative;
-      flex-shrink: 0;
-      transition: transform steps(12, end);
-    }
-    .timer::after {
-      content: '';
-      border: calc(var(--thickness) / 2) solid var(--colour);
-      background-color: var(--colour);
-      height: calc((var(--width) - var(--thickness)) / 2);
-      position: absolute;
-      left: calc(50% - var(--thickness) / 2);
-    }
     .timer.go {
       transform: rotate(1turn);
     }
@@ -179,34 +221,6 @@ export function TaskSource({ type, addTask }: Props) {
       background-image: url('css/cat.gif');
     }
 
-    .immediate::after {
-      content: '!';
-      font-weight: bold;
-      color: white;
-      font-size: 4em;
-      padding: 0 10px;
-      font-family: serif;
-    }
-
-    .next-tick {
-      width: var(--width);
-      height: var(--width);
-      display: flex;
-      border-radius: 50%;
-    }
-
-    .next-tick::after {
-      content: '';
-      display: block;
-      border: 10px solid green;
-      width: calc(var(--width) * .6);
-      height: calc(var(--width) * .3);
-      border-top-style: none;
-      border-right-style: none;
-      transform: rotate(-.125turn);
-      margin: auto;
-    }
-
     .postmessage {
       width: var(--width);
       height: calc(var(--width) / 1.4);
@@ -248,17 +262,6 @@ export function TaskSource({ type, addTask }: Props) {
 }
 
 // startAsyncTask() {
-//   const task = document.createElement('div');
-//   task.classList.add('thread-item');
-//   this.thread.appendChild(task);
-
-//   const shrinker = document.createElement('div');
-//   shrinker.classList.add('shrinker');
-//   task.appendChild(shrinker);
-
-//   const asyncTask = document.createElement('div');
-//   asyncTask.classList.add(this.type);
-//   shrinker.appendChild(asyncTask);
 
 //   requestAnimationFrame(() => asyncTask.classList.add('go'));
 

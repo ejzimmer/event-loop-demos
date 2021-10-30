@@ -36,7 +36,7 @@ export function EventLoop({ sources, rendering }: Props) {
   const [nextId, setNextId] = useState(0)
   const [tasks, setTasks] = useState<Task[]>([])
 
-  const addTask = (task: string) => {
+  const pushTask = (task: string) => {
     setTasks([...tasks, { type: task, id: nextId }])
     setNextId(nextId + 1)
   }
@@ -49,7 +49,7 @@ export function EventLoop({ sources, rendering }: Props) {
     <Container>
       <Sources>
         {sources.map((source) => (
-          <TaskSource key={source} type={source} addTask={addTask} />
+          <TaskSource key={source} type={source} pushTask={pushTask} />
         ))}
       </Sources>
       <TaskQueues

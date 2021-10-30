@@ -24,3 +24,32 @@
   height: calc(var(--width) / 1.16);
   width: calc(var(--width) / 2);
 }
+
+.timer {
+  --colour: white;
+  border: var(--thickness) solid var(--colour);
+  border-radius: 50%;
+  width: var(--width);
+  height: var(--width);
+  position: relative;
+  flex-shrink: 0;
+  transition: transform steps(12, end);
+}
+.timer::after {
+  content: "";
+  border: calc(var(--thickness) / 2) solid var(--colour);
+  background-color: var(--colour);
+  height: calc((var(--width) - var(--thickness)) / 2);
+  position: absolute;
+  left: calc(50% - var(--thickness) / 2);
+}
+
+.thread-item {
+  --size: calc(var(--width) / 2 + var(--thickness));
+  width: var(--size);
+  height: var(--size);
+}
+.shrinker {
+  transform: scale(0.4);
+  transform-origin: 20% top;
+}
