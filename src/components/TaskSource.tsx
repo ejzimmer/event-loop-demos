@@ -55,7 +55,7 @@ interface Props {
 }
 
 export function TaskSource({ type, pushTask }: Props) {
-  const [threads, setThreads] = useState<{ id: number; time: number }[]>([])
+  const [threads, setThreads] = useState<{ id: string; time: number }[]>([])
   const [nextId, setNextId] = useState(0)
 
   const isAsync = asyncTasks.includes(type)
@@ -65,11 +65,11 @@ export function TaskSource({ type, pushTask }: Props) {
   }
 
   const pushThread = (time: number) => {
-    setThreads((threads) => [...threads, { id: nextId, time }])
+    setThreads((threads) => [...threads, { id: `${type}-${nextId}`, time }])
     setNextId((nextId) => nextId + 1)
   }
 
-  const removeThread = (id: number) => {
+  const removeThread = (id: string) => {
     setThreads((threads) => threads.filter((thread) => thread.id !== id))
     pushTask(type)
   }
@@ -99,9 +99,9 @@ function AsyncTask({
   removeThread,
   time,
 }: {
-  id: number
+  id: string
   type: string
-  removeThread: (id: number) => void
+  removeThread: (id: string) => void
   time: number
 }) {
   const [transform, setTransform] = useState("")

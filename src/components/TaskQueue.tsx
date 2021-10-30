@@ -36,8 +36,8 @@ const Container = styled.div`
 `
 
 interface Props {
-  tasks: { type: string; id: number }[]
-  taskIsDone: () => void
+  tasks: { type: string; id: string }[]
+  taskIsDone: (type: string) => void
   canRun: boolean
 }
 
@@ -54,7 +54,10 @@ export function TaskQueue({ tasks, taskIsDone, canRun }: Props) {
             zIndex: index * -1,
           }}
         >
-          <Task running={index === 0 && canRun} onFinished={taskIsDone} />
+          <Task
+            running={index === 0 && canRun}
+            onFinished={() => taskIsDone(task.type)}
+          />
         </div>
       ))}
     </Container>

@@ -20,25 +20,29 @@ const Sources = styled.div`
 
 export interface Task {
   type: string
-  id: number
+  id: string
 }
 
 interface Props {
   sources: string[]
   rendering: boolean
+  additionalQueue?: string
 }
 
-export function EventLoop({ sources, rendering }: Props) {
+export function EventLoop({ sources, rendering, additionalQueue }: Props) {
   const [nextId, setNextId] = useState(0)
   const [tasks, setTasks] = useState<Task[]>([])
 
   const pushTask = (task: string) => {
-    setTasks((tasks) => [...tasks, { type: task, id: nextId }])
+    setTasks((tasks) => [...tasks, { type: task, id: `${task}-${nextId}` }])
     setNextId((nextId) => nextId + 1)
   }
 
-  const popTask = () => {
-    setTasks(tasks.slice(1))
+  const popTask = (type: string) => {
+    setTasks((tasks) => {
+      const firstIndex = tasks.findIndex((task) => task.type === type)
+      return [...tasks.slice(0, firstIndex), ...tasks.slice(firstIndex + 1)]
+    })
   }
 
   return (
@@ -52,6 +56,7 @@ export function EventLoop({ sources, rendering }: Props) {
         rendering={rendering}
         tasks={tasks}
         popTask={popTask}
+        additionalQueue={additionalQueue}
       ></TaskQueues>
     </Container>
   )

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import styled, { useTheme } from "styled-components"
+import styled from "styled-components"
 import { Task } from "./EventLoop"
 import { QueueSelector } from "./QueueSelector"
 import { RenderingPipeline } from "./RenderingPipeline"
@@ -7,7 +7,7 @@ import { TaskQueue } from "./TaskQueue"
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 20px 0;
   position: relative;
   --queue-width: 100px;
@@ -22,57 +22,115 @@ const RenderingPipelineContainer = styled.div`
   justify-self: center;
 `
 
+enum Queue {
+  ADDITIONAL_QUEUE,
+  NORMAL_QUEUE,
+  RENDERING_PIPELINE,
+}
 interface Props {
   rendering: boolean
   tasks: Task[]
-  popTask: () => void
+  popTask: (type: string) => void
+  additionalQueue?: string
 }
 
-export function TaskQueues({ rendering = true, tasks, popTask }: Props) {
-  const [pipelineIsRunning, setPipelineIsRunning] = useState(false)
+export function TaskQueues({
+  rendering = true,
+  tasks,
+  popTask,
+  additionalQueue,
+}: Props) {
+  // if a task ends, pick a queue
+  // if the rendering pipeline ends, pick a queue
+
+  const [somethingIsRunning, setSomethingIsRunning] = useState(false)
   const [isReadyToRender, setIsReadyToRender] = useState(false)
+  const [nextQueue, setNextQueue] = useState(Queue.NORMAL_QUEUE)
+
+  const [normalTasks, setNormalTasks] = useState<Task[]>([])
+  const [otherTasks, setOtherTasks] = useState<Task[]>([])
 
   const readyToRender = () => setIsReadyToRender(true)
 
-  const taskIsDone = () => {
-    popTask()
-
+  const chooseQueue = () => {
     if (isReadyToRender) {
-      setPipelineIsRunning(true)
+      setNextQueue(Queue.RENDERING_PIPELINE)
+    } else if (otherTasks.length > 0) {
+      setNextQueue(Queue.ADDITIONAL_QUEUE)
+    } else {
+      setNextQueue(Queue.NORMAL_QUEUE)
     }
   }
 
+  const taskIsDone = (type: string) => {
+    popTask(type)
+    chooseQueue()
+  }
+
   const renderDone = () => {
-    setPipelineIsRunning(false)
+    setSomethingIsRunning(normalTasks.length + otherTasks.length !== 0)
     setIsReadyToRender(false)
   }
 
   useEffect(() => {
+    if (!isReadyToRender) {
+      chooseQueue()
+    }
+  }, [isReadyToRender])
+
+  useEffect(() => {
+    if (additionalQueue) {
+      setNormalTasks(tasks.filter((task) => task.type !== additionalQueue))
+      setOtherTasks(tasks.filter((task) => task.type === additionalQueue))
+    } else {
+      setNormalTasks(tasks)
+    }
+  }, [tasks])
+
+  useEffect(() => {
+    if (normalTasks.length + otherTasks.length === 1) {
+      chooseQueue()
+      setSomethingIsRunning(true)
+    } else if (
+      normalTasks.length + otherTasks.length === 0 &&
+      !isReadyToRender
+    ) {
+      setSomethingIsRunning(false)
+      chooseQueue()
+    }
+  }, [normalTasks, otherTasks, somethingIsRunning])
+
+  useEffect(() => {
     if (isReadyToRender && tasks.length === 0) {
-      setPipelineIsRunning(true)
+      chooseQueue()
+      setSomethingIsRunning(true)
     }
   }, [isReadyToRender])
 
   return (
     <Container>
+      {additionalQueue && (
+        <TaskQueue
+          tasks={otherTasks}
+          taskIsDone={taskIsDone}
+          canRun={nextQueue === Queue.ADDITIONAL_QUEUE}
+        />
+      )}
       <TaskQueue
-        tasks={tasks}
+        tasks={normalTasks}
         taskIsDone={taskIsDone}
-        canRun={!pipelineIsRunning}
+        canRun={nextQueue === Queue.NORMAL_QUEUE}
       />
       {rendering && (
         <RenderingPipelineContainer>
           <RenderingPipeline
-            run={pipelineIsRunning}
+            run={nextQueue === Queue.RENDERING_PIPELINE}
             readyToRender={readyToRender}
             renderDone={renderDone}
           />
         </RenderingPipelineContainer>
       )}
-      <QueueSelector
-        column={pipelineIsRunning ? -2 : 1}
-        running={tasks.length > 0 || pipelineIsRunning}
-      />
+      <QueueSelector column={nextQueue + 1} running={somethingIsRunning} />
     </Container>
   )
 }
