@@ -55,22 +55,22 @@ interface Props {
 }
 
 export function TaskSource({ type, pushTask }: Props) {
-  const [threads, setThreads] = useState<{ id: number; time: string }[]>([])
+  const [threads, setThreads] = useState<{ id: number; time: number }[]>([])
   const [nextId, setNextId] = useState(0)
 
   const isAsync = asyncTasks.includes(type)
 
   const addTask = () => {
-    isAsync ? pushThread(`${Math.random() * 4 + 2}s`) : pushTask(type)
+    isAsync ? pushThread(Math.random() * 4 + 2) : pushTask(type)
   }
 
-  const pushThread = (time: string) => {
-    setThreads([...threads, { id: nextId, time }])
+  const pushThread = (time: number) => {
+    setThreads((threads) => [...threads, { id: nextId, time }])
     setNextId((nextId) => nextId + 1)
   }
 
   const removeThread = (id: number) => {
-    setThreads(threads.filter((thread) => thread.id !== id))
+    setThreads((threads) => threads.filter((thread) => thread.id !== id))
     pushTask(type)
   }
 
@@ -102,14 +102,18 @@ function AsyncTask({
   id: number
   type: string
   removeThread: (id: number) => void
-  time: string
+  time: number
 }) {
   const [transform, setTransform] = useState("")
 
   useEffect(() => {
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => setTransform("rotate(1turn)"))
-    )
+    if (type === "timer") {
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setTransform("rotate(1turn)"))
+      )
+    } else {
+      setTimeout(end, time * 1000)
+    }
   }, [])
 
   const end = () => {
@@ -122,7 +126,7 @@ function AsyncTask({
         <div
           className={type}
           style={{
-            transitionDuration: time,
+            transitionDuration: `${time}s`,
             transform,
           }}
           onTransitionEndCapture={end}
@@ -138,48 +142,6 @@ function AsyncTask({
 {
   /* <style>
 
-    .timer.go {
-      transform: rotate(1turn);
-    }
-
-    .network {
-      width: var(--width);
-      height: var(--width);
-      margin: auto;
-      background: repeating-radial-gradient(circle at bottom left, white, white 9%, transparent 9%, transparent 18%);
-      border-top-right-radius: 100%;
-      transform-origin: bottom left;
-      transform:  translateX(50%) rotate(-.125turn);
-      position: relative;
-    }
-    .network::after {
-      content: '';
-      display: block;
-      width: 18%;
-      height: 18%;
-      border-radius: 50%;
-      background-color: white;
-      position: absolute;
-      left: -4.5%;
-      bottom: -4.5%;
-    }
-    .thread .network {
-      animation: wifi 3s infinite steps(3);
-    }
-    @keyframes wifi {
-      from {
-        background: none;
-      }
-      33% { 
-        background: radial-gradient(circle at bottom left, transparent, transparent 18%, white 18%, white 27%, transparent 27%);
-      }
-      66% {
-        background: radial-gradient(circle at bottom left, transparent, transparent 36%, white 36%, white 45%, transparent 45%);
-      }
-      to {
-        background: radial-gradient(circle at bottom left, transparent, transparent 54%, white 54%, white 63%, transparent 63%);
-      }
-    }
     .network:hover {
       transform:  translateX(50%) rotate(-.125turn);
     }

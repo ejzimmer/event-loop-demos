@@ -1,17 +1,11 @@
 import styled from "styled-components"
 import { BrowserWindow } from "./BrowserWindow"
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 5vh;
-`
-
 const BrowserWindowContainer = styled.div`
-  height: 30vh;
   width: 95%;
   margin: auto;
   z-index: -1;
+  height: 10vh;
 `
 
 const Pipe = styled.div`
@@ -19,7 +13,7 @@ const Pipe = styled.div`
   --midgreen: #28a828;
   width: 16vh;
   max-width: 100%;
-  height: 33vh;
+  height: 16vh;
   border: 6px solid #006000;
   background: linear-gradient(
     to right,
@@ -62,19 +56,15 @@ const Timer = styled.div`
   right: 0;
 `
 
-interface Props {
-  addTask: (task: string) => void
-}
-
-export function RenderingPipeline({ addTask }: Props) {
+export function RenderingPipeline() {
   return (
-    <Container>
+    <>
       <BrowserWindowContainer>
-        <BrowserWindow addTask={addTask} />
+        <BrowserWindow />
       </BrowserWindowContainer>
       <Pipe />
       <Timer />
-    </Container>
+    </>
   )
 }
 

@@ -42,11 +42,9 @@ export function Task({ running, popTask }: Props) {
 
   useEffect(() => {
     if (running) {
-      setHeight("0")
+      requestAnimationFrame(() => requestAnimationFrame(() => setHeight("0")))
     }
   }, [running])
-  // set animation state to playing if running = true
-  // on animation end, call pop
 
   return <Item duration={duration} height={height} onTransitionEnd={popTask} />
 }

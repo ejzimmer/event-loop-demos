@@ -6,18 +6,19 @@ import { RenderingPipeline } from "./RenderingPipeline"
 import { TaskQueue } from "./TaskQueue"
 
 const Container = styled.div`
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   position: relative;
   --queue-width: 100px;
   margin: 0 auto;
-  min-height: calc(var(--queue-width * 2));
+  width: 100%;
+  justify-items: center;
 `
 
 const RenderingPipelineContainer = styled.div`
   max-width: 25%;
-  margin: 0 3vw;
-  padding-top: 5vh;
+  align-self: end;
+  justify-self: center;
 `
 
 interface Props {
@@ -30,11 +31,11 @@ export function TaskQueues({ rendering = true, tasks, popTask }: Props) {
   return (
     <Container>
       <TaskQueue tasks={tasks} popTask={popTask} />
-      {/* {rendering && (
+      {rendering && (
         <RenderingPipelineContainer>
-          <RenderingPipeline addTask={addTask} />
+          <RenderingPipeline />
         </RenderingPipelineContainer>
-      )} */}
+      )}
       <QueueSelector running={tasks.length > 0} />
     </Container>
   )

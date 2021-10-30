@@ -4,18 +4,14 @@ import { TaskQueues } from "./TaskQueues"
 import { TaskSource } from "./TaskSource"
 
 const Container = styled.div`
-  height: 700px;
-  padding: 50px;
-  padding-bottom: 150px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
   box-sizing: border-box;
+  height: 75%;
 `
 
 const Sources = styled.div`
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -37,8 +33,8 @@ export function EventLoop({ sources, rendering }: Props) {
   const [tasks, setTasks] = useState<Task[]>([])
 
   const pushTask = (task: string) => {
-    setTasks([...tasks, { type: task, id: nextId }])
-    setNextId(nextId + 1)
+    setTasks((tasks) => [...tasks, { type: task, id: nextId }])
+    setNextId((nextId) => nextId + 1)
   }
 
   const popTask = () => {
@@ -59,27 +55,4 @@ export function EventLoop({ sources, rendering }: Props) {
       ></TaskQueues>
     </Container>
   )
-}
-{
-  /* <script>
-
-  const width = 960;
-  const height = 700;
-
-  class EventLoop extends HTMLElement {
-
-    startTimer() {
-      this.queues.startTimer();
-    }
-
-    addTask(taskType) {
-      this.queues.addTask(taskType);
-    }
-
-    setScale(scale) {
-      this.style.transform = `translate(-50%, calc(-50% - 8px)) scale(${scale})`;
-    }
-  }
-</script>
-  */
 }

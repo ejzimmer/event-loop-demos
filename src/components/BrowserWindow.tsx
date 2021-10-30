@@ -5,6 +5,7 @@ const Container = styled.div`
   --control-colour: #aaa;
   --control-highlight: #ccc;
   --control-shadow: #888;
+  height: 100%;
 `
 
 const Chrome = styled.div`
@@ -96,11 +97,7 @@ const Button = styled.button`
   }
 `
 
-interface Props {
-  addTask: (task: string) => void
-}
-
-export function BrowserWindow({ addTask }: Props) {
+export function BrowserWindow() {
   return (
     <Container>
       <Chrome>
@@ -110,7 +107,7 @@ export function BrowserWindow({ addTask }: Props) {
           <WindowControl />
         </TitleBar>
         <Page>
-          <Button onClick={() => addTask("browser")}>Click me</Button>
+          <Button>Click me</Button>
         </Page>
       </Chrome>
     </Container>
