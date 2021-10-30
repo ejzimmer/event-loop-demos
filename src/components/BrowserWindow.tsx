@@ -6,6 +6,11 @@ const Container = styled.div`
   --control-highlight: #ccc;
   --control-shadow: #888;
   height: 100%;
+
+  &.go {
+    transition: transform 2s 0.5s linear;
+    transform: translateY(103%);
+  }
 `
 
 const Chrome = styled.div`
@@ -97,9 +102,13 @@ const Button = styled.button`
   }
 `
 
-export function BrowserWindow() {
+interface Props {
+  render?: boolean
+  renderDone?: () => void
+}
+export function BrowserWindow({ render, renderDone }: Props) {
   return (
-    <Container>
+    <Container className={render ? "go" : ""} onTransitionEnd={renderDone}>
       <Chrome>
         <TitleBar>
           <WindowControl />

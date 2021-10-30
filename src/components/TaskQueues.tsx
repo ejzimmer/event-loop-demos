@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import styled from "styled-components"
+import styled, { useTheme } from "styled-components"
 import { Task } from "./EventLoop"
 import { QueueSelector } from "./QueueSelector"
 import { RenderingPipeline } from "./RenderingPipeline"
@@ -8,6 +8,7 @@ import { TaskQueue } from "./TaskQueue"
 const Container = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-gap: 20px 0;
   position: relative;
   --queue-width: 100px;
   margin: 0 auto;
@@ -28,15 +29,50 @@ interface Props {
 }
 
 export function TaskQueues({ rendering = true, tasks, popTask }: Props) {
+  const [pipelineIsRunning, setPipelineIsRunning] = useState(false)
+  const [isReadyToRender, setIsReadyToRender] = useState(false)
+
+  const readyToRender = () => setIsReadyToRender(true)
+
+  const taskIsDone = () => {
+    popTask()
+
+    if (isReadyToRender) {
+      setPipelineIsRunning(true)
+    }
+  }
+
+  const renderDone = () => {
+    setPipelineIsRunning(false)
+    setIsReadyToRender(false)
+  }
+
+  useEffect(() => {
+    if (isReadyToRender && tasks.length === 0) {
+      setPipelineIsRunning(true)
+    }
+  }, [isReadyToRender])
+
   return (
     <Container>
-      <TaskQueue tasks={tasks} popTask={popTask} />
+      <TaskQueue
+        tasks={tasks}
+        taskIsDone={taskIsDone}
+        canRun={!pipelineIsRunning}
+      />
       {rendering && (
         <RenderingPipelineContainer>
-          <RenderingPipeline />
+          <RenderingPipeline
+            run={pipelineIsRunning}
+            readyToRender={readyToRender}
+            renderDone={renderDone}
+          />
         </RenderingPipelineContainer>
       )}
-      <QueueSelector running={tasks.length > 0} />
+      <QueueSelector
+        column={pipelineIsRunning ? -2 : 1}
+        running={tasks.length > 0 || pipelineIsRunning}
+      />
     </Container>
   )
 }

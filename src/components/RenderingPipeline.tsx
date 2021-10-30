@@ -1,5 +1,11 @@
+import { useEffect, useRef, useState } from "react"
 import styled from "styled-components"
 import { BrowserWindow } from "./BrowserWindow"
+
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: min-content 1fr;
+`
 
 const BrowserWindowContainer = styled.div`
   width: 95%;
@@ -48,23 +54,52 @@ const Pipe = styled.div`
     background: inherit;
   }
 `
-
+interface TimerProps {
+  overtime: boolean
+}
 const Timer = styled.div`
   font-size: 3em;
-  position: absolute;
-  bottom: 0;
-  right: 0;
+  color: ${({ overtime }: TimerProps) => (overtime ? "red" : "white")};
+  align-self: end;
+  margin-left: 1em;
 `
 
-export function RenderingPipeline() {
+interface Props {
+  run: boolean
+  readyToRender: () => void
+  renderDone: () => void
+}
+
+export function RenderingPipeline({ run, readyToRender, renderDone }: Props) {
+  const [time, setTime] = useState(0)
+  const interval = useRef<any>()
+
+  useEffect(() => {
+    interval.current = setInterval(() => setTime((time) => time + 1), 1000)
+
+    return () => clearInterval(interval.current)
+  }, [])
+
+  useEffect(() => {
+    if (time >= 16) {
+      readyToRender()
+    }
+  }, [time])
+
+  useEffect(() => {
+    run && setTime(0)
+  }, [run])
+
   return (
-    <>
-      <BrowserWindowContainer>
-        <BrowserWindow />
-      </BrowserWindowContainer>
-      <Pipe />
-      <Timer />
-    </>
+    <Container>
+      <div>
+        <BrowserWindowContainer>
+          <BrowserWindow render={run} renderDone={renderDone} />
+        </BrowserWindowContainer>
+        <Pipe />
+      </div>
+      <Timer overtime={time >= 16}>{time}</Timer>
+    </Container>
   )
 }
 
@@ -72,44 +107,11 @@ export function RenderingPipeline() {
   /* <template id="pipeline">
   <style>
     
-    browser-window.go {
-      transition: transform 2s .5s linear;
-      transform: translateY(103%);
-    }
 
-    .overtime {
-      color: red;
-    }
   </style>
-  <browser-window class="go">
-    <button>CLICK ME</button>
-  </browser-window>
-  <div class="timer" id="seconds-since-repaint"></div>
-</template> */
 }
 {
   /* <script>
-  class RenderingPipeline extends HTMLElement {
-    constructor() {
-      this.secondsSinceRepaint = 0;
-
-      this.browser.addEventListener('transitionend', (event) => {
-        this.resolveTask();
-        this.startTimer();
-      });
-
-    }
-
-    startTimer() {
-      this.interval = setInterval(() => {
-        this.timer.innerHTML = ++this.secondsSinceRepaint;
-        if (this.secondsSinceRepaint > 16) {
-          this.timer.classList.add('overtime');
-        } else {
-          this.timer.classList.remove('overtime');
-        }
-      }, 500);
-    };
 
     runTask() {
       const taskPromise = new Promise(resolve => this.resolveTask = resolve);
