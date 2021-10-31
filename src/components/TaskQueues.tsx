@@ -7,7 +7,7 @@ import { TaskQueue } from "./TaskQueue"
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-gap: 20px 0;
   position: relative;
   --queue-width: 100px;
