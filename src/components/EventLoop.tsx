@@ -27,9 +27,15 @@ interface Props {
   sources: string[]
   rendering: boolean
   additionalQueues?: Queue[]
+  forceTimeoutsToZero?: boolean
 }
 
-export function EventLoop({ sources, rendering, additionalQueues }: Props) {
+export function EventLoop({
+  sources,
+  rendering,
+  additionalQueues,
+  forceTimeoutsToZero,
+}: Props) {
   const [nextId, setNextId] = useState(0)
   const [tasks, setTasks] = useState<Task[]>([])
 
@@ -49,7 +55,12 @@ export function EventLoop({ sources, rendering, additionalQueues }: Props) {
     <Container>
       <Sources>
         {sources.map((source) => (
-          <TaskSource key={source} type={source} pushTask={pushTask} />
+          <TaskSource
+            key={source}
+            type={source}
+            pushTask={pushTask}
+            forceTimeoutsToZero={forceTimeoutsToZero}
+          />
         ))}
       </Sources>
       <TaskQueues

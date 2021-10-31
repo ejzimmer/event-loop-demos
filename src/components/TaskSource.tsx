@@ -22,16 +22,19 @@ const asyncTasks = ["timer", "network", "drive"]
 interface Props {
   type: string
   pushTask: (type: string) => void
+  forceTimeoutsToZero?: boolean
 }
 
-export function TaskSource({ type, pushTask }: Props) {
+export function TaskSource({ type, pushTask, forceTimeoutsToZero }: Props) {
   const [threads, setThreads] = useState<{ id: string; time: number }[]>([])
   const [nextId, setNextId] = useState(0)
 
   const isAsync = asyncTasks.includes(type)
 
   const addTask = () => {
-    isAsync ? pushThread(Math.random() * 4 + 2) : pushTask(type)
+    isAsync
+      ? pushThread(forceTimeoutsToZero ? 0.1 : Math.random() * 4 + 2)
+      : pushTask(type)
   }
 
   const pushThread = (time: number) => {

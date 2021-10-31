@@ -5,6 +5,7 @@ import { Simple } from "./pages/Simple"
 import { MultipleQueues } from "./pages/MultipleQueues"
 import { Microtasks } from "./pages/Microtasks"
 import { RequestAnimationFrame } from "./pages/RequestAnimationFrame"
+import { TimeoutAnimation } from "./pages/TimeoutAnimation"
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Link to="rendering-pipeline">Rendering Pipeline</Link>
           <Link to="multiple-queues">Multiple Queues</Link>
           <Link to="microtasks">Microtasks</Link>
+          <Link to="timeout-animation">Timeout animation</Link>
           <Link to="animation">requestAnimationFrame</Link>
         </li>
       </ul>
@@ -34,6 +36,9 @@ function App() {
         </Route>
         <Route path="/microtasks">
           <Microtasks />
+        </Route>
+        <Route path="/timeout-animation">
+          <TimeoutAnimation />
         </Route>
         <Route path="/animation">
           <RequestAnimationFrame />

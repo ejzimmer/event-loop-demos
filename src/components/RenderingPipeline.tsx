@@ -103,33 +103,3 @@ export function RenderingPipeline({ run, readyToRender, renderDone }: Props) {
     </Container>
   )
 }
-
-{
-  /* <template id="pipeline">
-  <style>
-    
-
-  </style>
-}
-{
-  /* <script>
-
-    runTask() {
-      const taskPromise = new Promise(resolve => this.resolveTask = resolve);
-
-      this.secondsSinceRepaint = 0;
-      clearInterval(this.interval);
-
-      requestAnimationFrame(() => {
-        this.browser.classList.remove('go');
-
-        requestAnimationFrame(() => {
-          this.browser.classList.add('go');
-        });
-      });
-
-      return taskPromise;
-    }
-  }
-</script> */
-}

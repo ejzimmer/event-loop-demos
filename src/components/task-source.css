@@ -1,19 +1,19 @@
 .html {
   display: flex;
-  width: 10em;
+  width: 6em;
+  height: 8em;
   background-color: white;
-  border: 2px solid black;
+  border: 6px solid black;
   flex-shrink: 0;
   display: flex;
-  transition: left 0.5s linear, bottom 0.5s linear, height 3s linear;
-  position: absolute;
   overflow: hidden;
+  padding: 5px;
 }
 .html::after {
   content: "<script>\A...\A</script>";
   font-family: "Courier New", Courier, monospace;
   font-weight: bold;
-  font-size: 3.35vw;
+  font-size: 1em;
   margin: auto;
 }
 
