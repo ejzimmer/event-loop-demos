@@ -22,43 +22,47 @@ const RenderingPipelineContainer = styled.div`
   justify-self: center;
 `
 
-enum Queue {
-  ADDITIONAL_QUEUE,
-  NORMAL_QUEUE,
-  RENDERING_PIPELINE,
+export enum Queue {
+  default,
+  browser,
+  promise,
+  rendering,
 }
 interface Props {
   rendering: boolean
   tasks: Task[]
   popTask: (type: string) => void
-  additionalQueue?: string
+  additionalQueues?: Queue[]
 }
 
 export function TaskQueues({
   rendering = true,
   tasks,
   popTask,
-  additionalQueue,
+  additionalQueues = [],
 }: Props) {
-  // if a task ends, pick a queue
-  // if the rendering pipeline ends, pick a queue
-
   const [somethingIsRunning, setSomethingIsRunning] = useState(false)
   const [isReadyToRender, setIsReadyToRender] = useState(false)
-  const [nextQueue, setNextQueue] = useState(Queue.NORMAL_QUEUE)
+  const [nextQueue, setNextQueue] = useState(Queue.default)
 
-  const [normalTasks, setNormalTasks] = useState<Task[]>([])
-  const [otherTasks, setOtherTasks] = useState<Task[]>([])
+  const setupQueues = () => {
+    const queues: Record<string, Task[]> = { default: [] }
+    additionalQueues.forEach((queue) => (queues[Queue[queue]] = []))
+    return queues
+  }
+  const [queues, setQueues] = useState(setupQueues)
 
   const readyToRender = () => setIsReadyToRender(true)
 
   const chooseQueue = () => {
-    if (isReadyToRender) {
-      setNextQueue(Queue.RENDERING_PIPELINE)
-    } else if (otherTasks.length > 0) {
-      setNextQueue(Queue.ADDITIONAL_QUEUE)
+    if (queues.promise && queues.promise.length > 0) {
+      setNextQueue(Queue.promise)
+    } else if (isReadyToRender) {
+      setNextQueue(Queue.rendering)
+    } else if (queues.browser && queues.browser.length > 0) {
+      setNextQueue(Queue.browser)
     } else {
-      setNextQueue(Queue.NORMAL_QUEUE)
+      setNextQueue(Queue.default)
     }
   }
 
@@ -67,8 +71,11 @@ export function TaskQueues({
     chooseQueue()
   }
 
+  const numberOfTasks = () =>
+    Object.values(queues).reduce((total, { length }) => total + length, 0)
+
   const renderDone = () => {
-    setSomethingIsRunning(normalTasks.length + otherTasks.length !== 0)
+    setSomethingIsRunning(numberOfTasks() !== 0)
     setIsReadyToRender(false)
   }
 
@@ -79,28 +86,34 @@ export function TaskQueues({
   }, [isReadyToRender])
 
   useEffect(() => {
-    if (additionalQueue) {
-      setNormalTasks(tasks.filter((task) => task.type !== additionalQueue))
-      setOtherTasks(tasks.filter((task) => task.type === additionalQueue))
-    } else {
-      setNormalTasks(tasks)
-    }
+    const queues = setupQueues()
+
+    tasks.forEach((task) => {
+      if (additionalQueues.map((key) => Queue[key]).includes(task.type)) {
+        queues[task.type].push(task)
+      } else {
+        queues[Queue[Queue.default]].push(task)
+      }
+    })
+
+    setQueues(queues)
   }, [tasks])
 
   useEffect(() => {
-    if (normalTasks.length + otherTasks.length === 1) {
+    // there were no tasks and now there is one
+    if (numberOfTasks() === 1) {
       chooseQueue()
       setSomethingIsRunning(true)
-    } else if (
-      normalTasks.length + otherTasks.length === 0 &&
-      !isReadyToRender
-    ) {
-      setSomethingIsRunning(false)
-      chooseQueue()
     }
-  }, [normalTasks, otherTasks, somethingIsRunning])
+
+    // there are no tasks and we're not ready to render
+    else if (numberOfTasks() === 0 && !isReadyToRender) {
+      setSomethingIsRunning(false)
+    }
+  }, [queues, somethingIsRunning])
 
   useEffect(() => {
+    // event loop is idling and then is ready to render
     if (isReadyToRender && tasks.length === 0) {
       chooseQueue()
       setSomethingIsRunning(true)
@@ -109,22 +122,25 @@ export function TaskQueues({
 
   return (
     <Container>
-      {additionalQueue && (
-        <TaskQueue
-          tasks={otherTasks}
-          taskIsDone={taskIsDone}
-          canRun={nextQueue === Queue.ADDITIONAL_QUEUE}
-        />
-      )}
       <TaskQueue
-        tasks={normalTasks}
+        type="default"
+        tasks={queues[Queue[Queue.default]]}
         taskIsDone={taskIsDone}
-        canRun={nextQueue === Queue.NORMAL_QUEUE}
+        canRun={nextQueue === Queue.default}
       />
+      {additionalQueues.map((queue: Queue) => (
+        <TaskQueue
+          key={queue}
+          type={Queue[queue]}
+          tasks={queues[Queue[queue]]}
+          taskIsDone={taskIsDone}
+          canRun={nextQueue === queue}
+        />
+      ))}
       {rendering && (
         <RenderingPipelineContainer>
           <RenderingPipeline
-            run={nextQueue === Queue.RENDERING_PIPELINE}
+            run={nextQueue === Queue.rendering}
             readyToRender={readyToRender}
             renderDone={renderDone}
           />
@@ -135,27 +151,7 @@ export function TaskQueues({
   )
 }
 
-{
-  /* <template id="queues">
-  <slot id="queues"></slot>
-</template> */
-}
-{
-  /* <script>
-  class Queues extends HTMLElement { */
-}
-
 // connectedCallback() {
-//   this.selector = this.shadow.querySelector('queue-selector');
-//   this.pipeline = this.shadow.querySelector('rendering-pipeline');
-//   this.queues = this.querySelectorAll('task-queue');
-// }
-
-// startTimer() {
-//   this.pipeline.timerCount();
-//   this.selector.startTimer();
-// }
-
 //     addTask(taskType) {
 //       if (this.pipeline.startTimer && !this.pipeline.interval) {
 //         this.pipeline.startTimer();

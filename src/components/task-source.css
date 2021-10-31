@@ -119,3 +119,18 @@
     );
   }
 }
+
+.promise {
+  width: var(--width);
+  height: var(--width);
+  background-color: #f7df1e;
+  position: relative;
+}
+.promise::after {
+  content: "then";
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  color: black;
+  font-size: 2em;
+}

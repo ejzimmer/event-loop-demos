@@ -1,6 +1,6 @@
 import { useState } from "react"
 import styled from "styled-components"
-import { TaskQueues } from "./TaskQueues"
+import { Queue, TaskQueues } from "./TaskQueues"
 import { TaskSource } from "./TaskSource"
 
 const Container = styled.div`
@@ -26,10 +26,10 @@ export interface Task {
 interface Props {
   sources: string[]
   rendering: boolean
-  additionalQueue?: string
+  additionalQueues?: Queue[]
 }
 
-export function EventLoop({ sources, rendering, additionalQueue }: Props) {
+export function EventLoop({ sources, rendering, additionalQueues }: Props) {
   const [nextId, setNextId] = useState(0)
   const [tasks, setTasks] = useState<Task[]>([])
 
@@ -56,7 +56,7 @@ export function EventLoop({ sources, rendering, additionalQueue }: Props) {
         rendering={rendering}
         tasks={tasks}
         popTask={popTask}
-        additionalQueue={additionalQueue}
+        additionalQueues={additionalQueues}
       ></TaskQueues>
     </Container>
   )

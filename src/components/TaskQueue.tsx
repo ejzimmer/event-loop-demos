@@ -2,8 +2,12 @@ import styled from "styled-components"
 import { Task } from "./Task"
 import "./task-types.css"
 
+interface ContainerProps {
+  type: string
+}
 const Container = styled.div`
-  --container-colour: orange;
+  --container-colour: ${({ type }: ContainerProps) =>
+    type === "promise" ? "#f7df1e" : "orange"};
   display: block;
   width: var(--queue-width);
   height: calc(var(--queue-width) * 0.5);
@@ -39,11 +43,12 @@ interface Props {
   tasks: { type: string; id: string }[]
   taskIsDone: (type: string) => void
   canRun: boolean
+  type: string
 }
 
-export function TaskQueue({ tasks, taskIsDone, canRun }: Props) {
+export function TaskQueue({ tasks, taskIsDone, canRun, type }: Props) {
   return (
-    <Container>
+    <Container type={type}>
       {tasks.map((task, index) => (
         <div
           key={task.id}

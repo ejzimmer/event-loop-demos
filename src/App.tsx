@@ -3,6 +3,7 @@ import { RenderingPipeline } from "./pages/RenderingPipeline"
 import { ParserOnly } from "./pages/ParserOnly"
 import { Simple } from "./pages/Simple"
 import { MultipleQueues } from "./pages/MultipleQueues"
+import { Microtasks } from "./pages/Microtasks"
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Link to="simple">Simple</Link>
           <Link to="rendering-pipeline">Rendering Pipeline</Link>
           <Link to="multiple-queues">Multiple Queues</Link>
+          <Link to="microtasks">Microtasks</Link>
         </li>
       </ul>
       <Switch>
@@ -27,6 +29,9 @@ function App() {
         </Route>
         <Route path="/multiple-queues">
           <MultipleQueues />
+        </Route>
+        <Route path="/microtasks">
+          <Microtasks />
         </Route>
       </Switch>
     </>
