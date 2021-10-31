@@ -5,21 +5,27 @@ import { QueueSelector } from "./QueueSelector"
 import { RenderingPipeline } from "./RenderingPipeline"
 import { TaskQueue } from "./TaskQueue"
 
+interface ContainerProps {
+  columns: number
+}
 const Container = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-gap: 20px 0;
+  grid-template-columns: ${({ columns }: ContainerProps) =>
+    `repeat(${columns}, min-content)`};
+  grid-gap: 20px 80px;
   position: relative;
   --queue-width: 100px;
   margin: 0 auto;
   width: 100%;
+  justify-content: center;
   justify-items: center;
 `
 
 const RenderingPipelineContainer = styled.div`
   max-width: 25%;
   align-self: end;
-  justify-self: center;
+  grid-column: -2;
+  justify-self: start;
 `
 
 export enum Queue {
@@ -48,6 +54,8 @@ export function TaskQueues({
   const [animationQueueIsRunning, setAnimationQueueIsRunning] = useState(false)
   const [nextAnimationLoop, setNextAnimationLoop] = useState<Task[]>([])
 
+  const numberOfColumns = 1 + additionalQueues.length + (rendering ? 1 : 0)
+
   const setupQueues = () => {
     const queues: Record<string, Task[]> = { default: [] }
     additionalQueues.forEach((queue) => (queues[Queue[queue]] = []))
@@ -57,9 +65,6 @@ export function TaskQueues({
 
   const readyToRender = () => setIsReadyToRender(true)
 
-  // if something gets added while we're running the animation queue, don't run it again
-  // show stuff that was added later with a different colour border
-
   const chooseQueue = () => {
     if (queues.promise && queues.promise.length > 0) {
       setNextQueue(Queue.promise)
@@ -68,7 +73,7 @@ export function TaskQueues({
         setAnimationQueueIsRunning(true)
         setNextQueue(Queue.animation)
       } else {
-        setNextQueue(Queue.rendering)
+        setNextQueue(-3) // -2 is the gridline, but we add 1 to the prop
         setSomethingIsRunning(true)
       }
       setSomethingIsRunning(true)
@@ -127,16 +132,10 @@ export function TaskQueues({
     if (!animationQueueIsRunning) {
       newQueues.animation = updatedAnimationTasks
     } else {
-      console.log("doing stuff while the thing is running")
       const existingAnimationTasks = queues.animation
-      console.log("existing tasks", existingAnimationTasks)
-      console.log("new tasks", updatedAnimationTasks)
       if (existingAnimationTasks.length === updatedAnimationTasks.length) {
         newQueues.animation = updatedAnimationTasks
       } else if (existingAnimationTasks.length > updatedAnimationTasks.length) {
-        console.log("removing a task")
-        console.log("the tasks before removal", queues.animation)
-        console.log("after removal", updatedAnimationTasks)
         newQueues.animation = updatedAnimationTasks
       } else {
         newQueues.animation = existingAnimationTasks
@@ -167,7 +166,7 @@ export function TaskQueues({
   }, [isReadyToRender])
 
   return (
-    <Container>
+    <Container columns={numberOfColumns}>
       <TaskQueue
         type="default"
         tasks={queues[Queue[Queue.default]]}
@@ -190,7 +189,7 @@ export function TaskQueues({
       {rendering && (
         <RenderingPipelineContainer>
           <RenderingPipeline
-            run={nextQueue === Queue.rendering}
+            run={(nextQueue as number) === -3}
             readyToRender={readyToRender}
             renderDone={renderDone}
           />
