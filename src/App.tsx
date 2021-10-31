@@ -12,7 +12,7 @@ import "./App.css"
 function App() {
   return (
     <>
-      <nav>
+      <nav style={{ marginBottom: "80px" }}>
         <ul>
           <li>
             <Link to="parser-only">Parser only</Link>
