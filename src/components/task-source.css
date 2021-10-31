@@ -1,4 +1,4 @@
-.html {
+.task-source.html {
   display: flex;
   width: 6em;
   height: 8em;
@@ -9,7 +9,7 @@
   overflow: hidden;
   padding: 5px;
 }
-.html::after {
+.task-source.html::after {
   content: "<script>\A...\A</script>";
   font-family: "Courier New", Courier, monospace;
   font-weight: bold;
@@ -17,7 +17,7 @@
   margin: auto;
 }
 
-.browser {
+.task-source.browser {
   background-image: url("mouse-pointer.svg");
   background-size: contain;
   background-repeat: no-repeat;
@@ -25,7 +25,8 @@
   width: calc(var(--width) / 2);
 }
 
-.timer {
+.task-source.timer,
+.thread-item .timer {
   --colour: white;
   border: var(--thickness) solid var(--colour);
   border-radius: 50%;
@@ -35,7 +36,8 @@
   flex-shrink: 0;
   transition: transform steps(12, end);
 }
-.timer::after {
+.task-source.timer::after,
+.thread-item .timer::after {
   content: "";
   border: calc(var(--thickness) / 2) solid var(--colour);
   background-color: var(--colour);
@@ -54,7 +56,8 @@
   transform-origin: 20% top;
 }
 
-.network {
+.task-source.network,
+.thread-item .network {
   width: var(--width);
   height: var(--width);
   margin: auto;
@@ -70,7 +73,7 @@
   transform: translateX(50%) rotate(-0.125turn);
   position: relative;
 }
-.network::after {
+.task-source.network::after .thread-item .network::after {
   content: "";
   display: block;
   width: 18%;
@@ -120,13 +123,13 @@
   }
 }
 
-.promise {
+.task-source.promise {
   width: var(--width);
   height: var(--width);
   background-color: #f7df1e;
   position: relative;
 }
-.promise::after {
+.task-source.promise::after {
   content: "then";
   position: absolute;
   right: 5px;
@@ -135,12 +138,12 @@
   font-size: 2em;
 }
 
-.animation {
+.task-source.animation {
   width: var(--width);
   height: var(--width);
   background-image: url("cat.png");
   background-size: contain;
 }
-.animation.running {
+.task-source.animation.running {
   background-image: url("cat.gif");
 }

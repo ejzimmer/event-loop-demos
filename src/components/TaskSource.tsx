@@ -49,7 +49,7 @@ export function TaskSource({ type, pushTask, forceTimeoutsToZero }: Props) {
 
   return (
     <Container onClick={addTask}>
-      <div className={type} style={{ margin: "auto" }} />
+      <div className={`task-source ${type}`} style={{ margin: "auto" }} />
       <ThreadContainer>
         {threads.map((thread) => (
           <AsyncTask

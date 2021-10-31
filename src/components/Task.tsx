@@ -34,9 +34,10 @@ const Item = styled.div`
 interface Props {
   running: boolean
   onFinished: () => void
+  type: string
 }
 
-export function Task({ running, onFinished }: Props) {
+export function Task({ running, onFinished, type }: Props) {
   const [duration] = useState(Math.random() * 4 + 2)
   const [height, setHeight] = useState("var(--queue-width)")
 
@@ -47,6 +48,11 @@ export function Task({ running, onFinished }: Props) {
   }, [running])
 
   return (
-    <Item duration={duration} height={height} onTransitionEnd={onFinished} />
+    <Item
+      duration={duration}
+      height={height}
+      onTransitionEnd={onFinished}
+      className={`task ${type}`}
+    />
   )
 }
