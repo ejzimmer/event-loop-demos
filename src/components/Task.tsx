@@ -35,9 +35,10 @@ interface Props {
   running: boolean
   onFinished: () => void
   type: string
+  task: any
 }
 
-export function Task({ running, onFinished, type }: Props) {
+export function Task({ running, onFinished, type, task }: Props) {
   const [duration] = useState(Math.random() * 4 + 2)
   const [height, setHeight] = useState("var(--queue-width)")
 
@@ -52,7 +53,9 @@ export function Task({ running, onFinished, type }: Props) {
       duration={duration}
       height={height}
       onTransitionEnd={onFinished}
-      className={`task ${type} ${running ? "running" : ""}`}
+      className={`task ${type} ${running ? "running" : ""} ${
+        task.nextTime ? "next" : ""
+      }`}
     />
   )
 }

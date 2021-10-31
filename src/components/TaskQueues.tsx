@@ -100,7 +100,10 @@ export function TaskQueues({
     setAnimationQueueIsRunning(false)
     setQueues((queues) => ({
       ...queues,
-      animation: [...queues.animation, ...nextAnimationLoop],
+      animation: [
+        ...queues.animation,
+        ...nextAnimationLoop.map(({ id, type }) => ({ id, type })),
+      ],
     }))
     setNextAnimationLoop([])
   }
@@ -133,16 +136,18 @@ export function TaskQueues({
       newQueues.animation = updatedAnimationTasks
     } else {
       const existingAnimationTasks = queues.animation
-      if (existingAnimationTasks.length === updatedAnimationTasks.length) {
-        newQueues.animation = updatedAnimationTasks
-      } else if (existingAnimationTasks.length > updatedAnimationTasks.length) {
+      if (existingAnimationTasks.length >= updatedAnimationTasks.length) {
         newQueues.animation = updatedAnimationTasks
       } else {
         newQueues.animation = existingAnimationTasks
         const newTask = updatedAnimationTasks.find(
           (task) => !existingAnimationTasks.map((t) => t.id).includes(task.id)
         )
-        newTask && setNextAnimationLoop((tasks) => [...tasks, newTask])
+        newTask &&
+          setNextAnimationLoop((tasks) => [
+            ...tasks,
+            { ...newTask, nextTime: true },
+          ])
       }
     }
     setQueues(newQueues)

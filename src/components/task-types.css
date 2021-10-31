@@ -35,3 +35,6 @@
 .task.animation.running {
   background-image: url("cat.gif");
 }
+.task.animation.next {
+  border-color: white;
+}

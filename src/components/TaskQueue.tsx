@@ -75,6 +75,7 @@ export function TaskQueue({ tasks, taskIsDone, canRun, type }: Props) {
             running={index === 0 && canRun}
             onFinished={() => taskIsDone(task.type)}
             type={task.type}
+            task={task}
           />
         </div>
       ))}
