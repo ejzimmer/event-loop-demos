@@ -10,7 +10,7 @@
 .task.drive {
   background-color: hsl(40, 80%, 80%);
 }
-.task.microtask {
+.task.promise {
   background-color: #f7df1e;
 }
 .task.next-tick {

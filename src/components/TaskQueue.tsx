@@ -2,12 +2,24 @@ import styled from "styled-components"
 import { Task } from "./Task"
 import "./task-types.css"
 
+const getColour = (queueType: string) => {
+  switch (queueType) {
+    case "promise":
+      return "#f7df1e"
+    case "next-tick":
+      return "green"
+    case "animation":
+      return "#28a828"
+    default:
+      return "orange"
+  }
+}
+
 interface ContainerProps {
   type: string
 }
 const Container = styled.div`
-  --container-colour: ${({ type }: ContainerProps) =>
-    type === "promise" ? "#f7df1e" : "orange"};
+  --container-colour: ${({ type }: ContainerProps) => getColour(type)};
   display: block;
   width: var(--queue-width);
   height: calc(var(--queue-width) * 0.5);
@@ -88,14 +100,6 @@ export function TaskQueue({ tasks, taskIsDone, canRun, type }: Props) {
       this.addEventListener('do-task', this.runTask);
     }
 
-    getColour(queueType) {
-      switch (queueType) {
-        case 'microtask': return '#f7df1e';
-        case 'next-tick': return 'green';
-        case 'animation': return '#28a828';
-        default: return 'orange';
-      }
-    }
 
     getShadowColour(queueType) {
       if (queueType === 'animation' || queueType === 'next-tick') {

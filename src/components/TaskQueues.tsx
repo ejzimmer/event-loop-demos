@@ -7,7 +7,7 @@ import { TaskQueue } from "./TaskQueue"
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(5, 1fr);
   grid-gap: 20px 0;
   position: relative;
   --queue-width: 100px;
@@ -26,6 +26,7 @@ export enum Queue {
   default,
   browser,
   promise,
+  animation,
   rendering,
 }
 interface Props {
@@ -58,6 +59,7 @@ export function TaskQueues({
     if (queues.promise && queues.promise.length > 0) {
       setNextQueue(Queue.promise)
     } else if (isReadyToRender) {
+      setSomethingIsRunning(true)
       setNextQueue(Queue.rendering)
     } else if (queues.browser && queues.browser.length > 0) {
       setNextQueue(Queue.browser)
@@ -68,7 +70,7 @@ export function TaskQueues({
 
   const taskIsDone = (type: string) => {
     popTask(type)
-    chooseQueue()
+    setSomethingIsRunning(false)
   }
 
   const numberOfTasks = () =>
@@ -100,17 +102,13 @@ export function TaskQueues({
   }, [tasks])
 
   useEffect(() => {
-    // there were no tasks and now there is one
-    if (numberOfTasks() === 1) {
+    if (!somethingIsRunning) {
       chooseQueue()
-      setSomethingIsRunning(true)
+      if (numberOfTasks() > 0) {
+        setSomethingIsRunning(true)
+      }
     }
-
-    // there are no tasks and we're not ready to render
-    else if (numberOfTasks() === 0 && !isReadyToRender) {
-      setSomethingIsRunning(false)
-    }
-  }, [queues, somethingIsRunning])
+  }, [queues])
 
   useEffect(() => {
     // event loop is idling and then is ready to render
@@ -126,7 +124,7 @@ export function TaskQueues({
         type="default"
         tasks={queues[Queue[Queue.default]]}
         taskIsDone={taskIsDone}
-        canRun={nextQueue === Queue.default}
+        canRun={nextQueue === Queue.default && somethingIsRunning}
       />
       {additionalQueues.map((queue: Queue) => (
         <TaskQueue
@@ -134,7 +132,7 @@ export function TaskQueues({
           type={Queue[queue]}
           tasks={queues[Queue[queue]]}
           taskIsDone={taskIsDone}
-          canRun={nextQueue === queue}
+          canRun={nextQueue === queue && somethingIsRunning}
         />
       ))}
       {rendering && (
