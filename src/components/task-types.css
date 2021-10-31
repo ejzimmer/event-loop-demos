@@ -26,10 +26,12 @@
 }
 
 .task.animation {
-  height: 60px;
   background-image: url("cat.png");
   background-size: cover;
 }
 .task.animation::before {
   content: "";
+}
+.task.animation.running {
+  background-image: url("cat.gif");
 }

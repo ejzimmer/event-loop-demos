@@ -52,7 +52,7 @@ export function Task({ running, onFinished, type }: Props) {
       duration={duration}
       height={height}
       onTransitionEnd={onFinished}
-      className={`task ${type}`}
+      className={`task ${type} ${running ? "running" : ""}`}
     />
   )
 }
