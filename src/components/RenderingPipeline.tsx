@@ -4,7 +4,7 @@ import { BrowserWindow } from "./BrowserWindow"
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: min-content 1fr;
+  position: relative;
 `
 
 const BrowserWindowContainer = styled.div`
@@ -62,6 +62,9 @@ const Timer = styled.div`
   color: ${({ overtime }: TimerProps) => (overtime ? "red" : "white")};
   align-self: end;
   margin-left: 1em;
+  position: absolute;
+  left: 5%;
+  bottom: 10px;
 `
 
 interface Props {
@@ -92,12 +95,10 @@ export function RenderingPipeline({ run, readyToRender, renderDone }: Props) {
 
   return (
     <Container>
-      <div>
-        <BrowserWindowContainer>
-          <BrowserWindow render={run} renderDone={renderDone} />
-        </BrowserWindowContainer>
-        <Pipe />
-      </div>
+      <BrowserWindowContainer>
+        <BrowserWindow render={run} renderDone={renderDone} />
+      </BrowserWindowContainer>
+      <Pipe />
       <Timer overtime={time >= 16}>{time}</Timer>
     </Container>
   )
