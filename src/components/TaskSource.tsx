@@ -14,7 +14,6 @@ const ThreadContainer = styled.div`
   justify-content: flex-start;
   width: calc(var(--width) + var(--thickness) * 2);
   position: absolute;
-  top: 100%;
 `
 
 const asyncTasks = ["timer", "network", "drive"]
