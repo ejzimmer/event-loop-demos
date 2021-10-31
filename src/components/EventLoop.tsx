@@ -12,7 +12,7 @@ const Container = styled.div`
 
 const Sources = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   width: 100%;
   position: relative;
