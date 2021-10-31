@@ -45,6 +45,8 @@ export function TaskQueues({
   const [somethingIsRunning, setSomethingIsRunning] = useState(false)
   const [isReadyToRender, setIsReadyToRender] = useState(false)
   const [nextQueue, setNextQueue] = useState(Queue.default)
+  const [animationQueueIsRunning, setAnimationQueueIsRunning] = useState(false)
+  const [nextAnimationLoop, setNextAnimationLoop] = useState<Task[]>([])
 
   const setupQueues = () => {
     const queues: Record<string, Task[]> = { default: [] }
@@ -55,15 +57,24 @@ export function TaskQueues({
 
   const readyToRender = () => setIsReadyToRender(true)
 
+  // if something gets added while we're running the animation queue, don't run it again
+  // show stuff that was added later with a different colour border
+
   const chooseQueue = () => {
     if (queues.promise && queues.promise.length > 0) {
       setNextQueue(Queue.promise)
     } else if (isReadyToRender) {
+      if (queues.animation.length > 0) {
+        setAnimationQueueIsRunning(true)
+        setNextQueue(Queue.animation)
+      } else {
+        setNextQueue(Queue.rendering)
+        setSomethingIsRunning(true)
+      }
       setSomethingIsRunning(true)
-      setNextQueue(Queue.rendering)
     } else if (queues.browser && queues.browser.length > 0) {
       setNextQueue(Queue.browser)
-    } else {
+    } else if (queues.default.length > 0) {
       setNextQueue(Queue.default)
     }
   }
@@ -74,11 +85,19 @@ export function TaskQueues({
   }
 
   const numberOfTasks = () =>
-    Object.values(queues).reduce((total, { length }) => total + length, 0)
+    Object.entries(queues)
+      .filter(([name]) => name !== Queue[Queue.animation])
+      .reduce((total, [_, { length }]) => total + length, 0)
 
   const renderDone = () => {
     setSomethingIsRunning(numberOfTasks() !== 0)
     setIsReadyToRender(false)
+    setAnimationQueueIsRunning(false)
+    setQueues((queues) => ({
+      ...queues,
+      animation: [...queues.animation, ...nextAnimationLoop],
+    }))
+    setNextAnimationLoop([])
   }
 
   useEffect(() => {
@@ -88,17 +107,46 @@ export function TaskQueues({
   }, [isReadyToRender])
 
   useEffect(() => {
-    const queues = setupQueues()
+    const newQueues = setupQueues()
 
     tasks.forEach((task) => {
+      if (task.type === Queue[Queue.animation]) return
+
       if (additionalQueues.map((key) => Queue[key]).includes(task.type)) {
-        queues[task.type].push(task)
+        newQueues[task.type].push(task)
       } else {
-        queues[Queue[Queue.default]].push(task)
+        newQueues[Queue[Queue.default]].push(task)
       }
     })
 
-    setQueues(queues)
+    const updatedAnimationTasks = tasks.filter(
+      (task) =>
+        task.type === "animation" &&
+        !nextAnimationLoop.map((task) => task.id).includes(task.id)
+    )
+    if (!animationQueueIsRunning) {
+      newQueues.animation = updatedAnimationTasks
+    } else {
+      console.log("doing stuff while the thing is running")
+      const existingAnimationTasks = queues.animation
+      console.log("existing tasks", existingAnimationTasks)
+      console.log("new tasks", updatedAnimationTasks)
+      if (existingAnimationTasks.length === updatedAnimationTasks.length) {
+        newQueues.animation = updatedAnimationTasks
+      } else if (existingAnimationTasks.length > updatedAnimationTasks.length) {
+        console.log("removing a task")
+        console.log("the tasks before removal", queues.animation)
+        console.log("after removal", updatedAnimationTasks)
+        newQueues.animation = updatedAnimationTasks
+      } else {
+        newQueues.animation = existingAnimationTasks
+        const newTask = updatedAnimationTasks.find(
+          (task) => !existingAnimationTasks.map((t) => t.id).includes(task.id)
+        )
+        newTask && setNextAnimationLoop((tasks) => [...tasks, newTask])
+      }
+    }
+    setQueues(newQueues)
   }, [tasks])
 
   useEffect(() => {
@@ -112,7 +160,7 @@ export function TaskQueues({
 
   useEffect(() => {
     // event loop is idling and then is ready to render
-    if (isReadyToRender && tasks.length === 0) {
+    if (isReadyToRender && numberOfTasks() === 0) {
       chooseQueue()
       setSomethingIsRunning(true)
     }
@@ -130,7 +178,11 @@ export function TaskQueues({
         <TaskQueue
           key={queue}
           type={Queue[queue]}
-          tasks={queues[Queue[queue]]}
+          tasks={
+            queue === Queue.animation
+              ? [...queues.animation, ...nextAnimationLoop]
+              : queues[Queue[queue]]
+          }
           taskIsDone={taskIsDone}
           canRun={nextQueue === queue && somethingIsRunning}
         />
@@ -148,30 +200,3 @@ export function TaskQueues({
     </Container>
   )
 }
-
-// connectedCallback() {
-//     addTask(taskType) {
-//       if (this.pipeline.startTimer && !this.pipeline.interval) {
-//         this.pipeline.startTimer();
-//       }
-//       const queue = this.findQueue(taskType);
-//       queue.addTask(taskType);
-//     }
-
-//     findQueue(type) {
-//       let defaultQueue;
-
-//       for (let queue of this.queues) {
-//         if (queue.type === type) {
-//           return queue;
-//         }
-//         if (queue.type === 'default') {
-//           defaultQueue = queue;
-//         }
-//       }
-
-//       return defaultQueue;
-//     }
-
-//   }
-// </script>

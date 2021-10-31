@@ -1,7 +1,7 @@
 import { EventLoop } from "../components/EventLoop"
 import { Queue } from "../components/TaskQueues"
 
-const sources = ["html", "browser", "timer", "network", "promise"]
+const sources = ["html", "browser", "timer", "network", "promise", "animation"]
 
 export function RequestAnimationFrame() {
   return (

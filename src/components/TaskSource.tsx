@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import styled, { keyframes } from "styled-components"
+import styled from "styled-components"
 import "./task-source.css"
 
 const Container = styled.div`
@@ -17,36 +17,6 @@ const ThreadContainer = styled.div`
   top: 100%;
 `
 
-const readDrive = keyframes`
-  from { transform: rotate(.09turn); }
-  to { transform: rotate(.18turn); }
-`
-
-const Arm = styled.div`
-  --arm-height: calc(var(--width) * 0.5);
-  height: --arm-height;
-  border: 8px solid transparent;
-  border-bottom: white solid var(--arm-height);
-  box-sizing: border-box;
-  width: 8px;
-  position: absolute;
-  bottom: 20%;
-  left: calc(30% - 8px);
-  transform-origin: bottom;
-  transform: rotate(0.1turn);
-  animation: ${readDrive} 2s infinite alternate linear;
-  animation-play-state: paused;
-`
-
-const syncTasks = [
-  "html",
-  "browser",
-  "promise",
-  "animation",
-  "immediate",
-  "next-tick",
-  "postmessage",
-]
 const asyncTasks = ["timer", "network", "drive"]
 
 interface Props {
@@ -88,7 +58,6 @@ export function TaskSource({ type, pushTask }: Props) {
           />
         ))}
       </ThreadContainer>
-      {/* {type === "drive" && <Arm />} */}
     </Container>
   )
 }
@@ -134,31 +103,4 @@ function AsyncTask({
       </div>
     </div>
   )
-}
-
-{
-  /* <template id="task-source"> */
-}
-{
-  /* <style>
-
-    .animation {
-      width: var(--width);
-      height: var(--width);
-      background-image: url('cat.png');
-      background-size: contain;
-    }
-    .animation.running {
-      background-image: url('css/cat.gif');
-    }
-
-  </style> */
-}
-// </template>
-{
-  // startAsyncTask() {
-  //   requestAnimationFrame(() => asyncTask.classList.add('go'));
-  // addTask() {
-  //   const type = this.type === 'promise' ? 'microtask' : this.type;
-  // }
 }

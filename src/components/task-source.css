@@ -134,3 +134,13 @@
   color: black;
   font-size: 2em;
 }
+
+.animation {
+  width: var(--width);
+  height: var(--width);
+  background-image: url("cat.png");
+  background-size: contain;
+}
+.animation.running {
+  background-image: url("cat.gif");
+}
