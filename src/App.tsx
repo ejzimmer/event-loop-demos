@@ -7,20 +7,36 @@ import { Microtasks } from "./pages/Microtasks"
 import { RequestAnimationFrame } from "./pages/RequestAnimationFrame"
 import { TimeoutAnimation } from "./pages/TimeoutAnimation"
 
+import "./App.css"
+
 function App() {
   return (
     <>
-      <ul>
-        <li>
-          <Link to="parser-only">Parser only</Link>
-          <Link to="simple">Simple</Link>
-          <Link to="rendering-pipeline">Rendering Pipeline</Link>
-          <Link to="multiple-queues">Multiple Queues</Link>
-          <Link to="microtasks">Microtasks</Link>
-          <Link to="timeout-animation">Timeout animation</Link>
-          <Link to="animation">requestAnimationFrame</Link>
-        </li>
-      </ul>
+      <nav>
+        <ul>
+          <li>
+            <Link to="parser-only">Parser only</Link>
+          </li>
+          <li>
+            <Link to="simple">Simple</Link>
+          </li>
+          <li>
+            <Link to="rendering-pipeline">Rendering Pipeline</Link>
+          </li>
+          <li>
+            <Link to="multiple-queues">Multiple Queues</Link>
+          </li>
+          <li>
+            <Link to="microtasks">Microtasks</Link>
+          </li>
+          <li>
+            <Link to="timeout-animation">Timeout animation</Link>
+          </li>
+          <li>
+            <Link to="animation">requestAnimationFrame</Link>
+          </li>
+        </ul>
+      </nav>
       <Switch>
         <Route path="/parser-only">
           <ParserOnly />
