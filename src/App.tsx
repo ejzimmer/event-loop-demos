@@ -12,7 +12,7 @@ import "./App.css"
 function App() {
   return (
     <>
-      <nav style={{ marginBottom: "80px" }}>
+      {/* <nav style={{ marginBottom: "80px" }}>
         <ul>
           <li>
             <Link to="parser-only">Parser only</Link>
@@ -36,7 +36,7 @@ function App() {
             <Link to="animation">requestAnimationFrame</Link>
           </li>
         </ul>
-      </nav>
+      </nav> */}
       <Switch>
         <Route path="/parser-only">
           <ParserOnly />

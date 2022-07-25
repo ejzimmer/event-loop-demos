@@ -8,6 +8,7 @@ const Container = styled.div`
   grid-template-rows: 1fr 1fr;
   box-sizing: border-box;
   height: 75%;
+  overflow: hidden;
 `
 
 const Sources = styled.div`

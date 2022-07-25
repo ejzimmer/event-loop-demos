@@ -19,6 +19,7 @@ const Container = styled.div`
   width: 100%;
   justify-content: center;
   justify-items: center;
+  overflow: hidden;
 `
 
 const RenderingPipelineContainer = styled.div`
